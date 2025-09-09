@@ -1,4 +1,4 @@
-# SIA TP2 - Métodos de Búsqueda
+# SIA TP2 - Algoritmos Genéticos
 
 Este proyecto implementa un **Algoritmo Genético (AG) para aproximar imágenes mediante triángulos**.  
 El objetivo es generar una imagen lo más parecida posible a una imagen de entrada utilizando un número limitado de triángulos, mediante evolución de poblaciones, selección, cruza y mutación.  
