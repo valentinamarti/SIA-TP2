@@ -16,14 +16,34 @@ def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
         new_x = min(max(x + dx, 0.0), 1.0)
         new_y = min(max(y + dy, 0.0), 1.0)
         new_polygon.vertices[i] = (new_x, new_y)
-    # mutar color
+    
+    # mutar color con nueva lógica
     if random.random() < prob:
         b, g, r, a = new_polygon.color
-        b = int(np.clip(b + random.randint(-70, 70), 0, 255))
-        g = int(np.clip(g + random.randint(-70, 70), 0, 255))
-        r = int(np.clip(r + random.randint(-70, 70), 0, 255))
-        a = int(np.clip(a + random.randint(-5, 5), 0, 255))
+        
+        mutation_choice = random.random()
+        
+        if mutation_choice < (prob / 2):
+            # Cambio completo de color [0 a prob/2)
+            b = random.randint(0, 255)
+            g = random.randint(0, 255)
+            r = random.randint(0, 255)
+        elif mutation_choice < prob:
+            # Hacer más transparente [prob/2 a prob)
+            a = int(np.clip(a - random.randint(20, 50), 0, 255))
+        elif mutation_choice < min(1.3 * prob, 1.0):
+            # Aclarar el color [prob a 1.2*prob)
+            b = int(np.clip(b + random.randint(10, 30), 0, 255))
+            g = int(np.clip(g + random.randint(10, 30), 0, 255))
+            r = int(np.clip(r + random.randint(10, 30), 0, 255))
+        elif mutation_choice < min(1.6 * prob, 1.0):
+            # Oscurecer el color [1.2*prob a 1.4*prob)
+            b = int(np.clip(b - random.randint(10, 30), 0, 255))
+            g = int(np.clip(g - random.randint(10, 30), 0, 255))
+            r = int(np.clip(r - random.randint(10, 30), 0, 255))
+
         new_polygon.color = (b, g, r, a)
+    
     return new_polygon
 
 def add_polygon(ind, prob, max_polygons):
