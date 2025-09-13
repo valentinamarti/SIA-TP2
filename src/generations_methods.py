@@ -1,5 +1,5 @@
 
-def replace_population_traditional(current_population, offspring, n_selected):
+def replace_population_traditional(current_population, offspring, n_selected=40):
     """
         Generate the next generation by selecting n_selected individuals from
         the union of current_population + offspring.
