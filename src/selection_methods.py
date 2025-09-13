@@ -66,11 +66,36 @@ def universal(population, num_parents):
 def boltzmann(population, num_parents, temperature=1.0):
     return
 
-def tournament_deterministic(population, num_parents, k=3):
-    return
+import random
 
-def tournament_probabilistic(population, num_parents, k=3, p=0.75):
-    return
+def tournament_deterministic(population, num_parents, k=3):
+    """Deterministic tournament selection."""
+    parents = []
+    for _ in range(num_parents):
+        tournament = random.sample(population, k)  # elijo k individuos al azar
+        winner = min(tournament, key=lambda ind: ind.fitness)  # mejor fitness
+        parents.append(winner)
+    return parents
+
+
+def tournament_probabilistic(population, num_parents, k=3, probs=None):
+    """Probabilistic tournament selection."""
+    if probs is None:
+        probs = [0.7, 0.2, 0.1] # 70%, 20%, 10%
+
+    parents = []
+    for _ in range(num_parents):
+        tournament = random.sample(population, k)
+        tournament_sorted = sorted(tournament, key=lambda ind: ind.fitness)
+
+        probs_adj = probs[:k]
+        s = sum(probs_adj)
+        probs_adj = [p / s for p in probs_adj]
+
+        winner = random.choices(tournament_sorted, weights=probs_adj, k=1)[0]
+        parents.append(winner)
+    return parents
+
 
 def tournament(population, num_parents, deterministic=True):
     if deterministic:
