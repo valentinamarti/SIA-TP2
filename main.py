@@ -35,8 +35,8 @@ def run_ga(image: np.ndarray,
 
         # TODO: calculate new generation's fitness
         # Selección
-        # population = select_individuals(selection_method, new_population, population_size)
-        population = new_population
+        population = select_individuals(selection_method, new_population, population_size)
+        # population = new_population
         print(f"Generación {gen + 1}: {len(population)} individuos")
 
     best = population[0]

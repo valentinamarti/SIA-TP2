@@ -1,11 +1,64 @@
+import math
 import random
-import numpy as np
 
-def elite(population, num_parents):
-    return
+def elite(individuals, selected_k):
+    """
+    Elite selection using n(i) = ceil((k - i)/n)
 
-def roulette(population, num_parents):
-    return
+    Args:
+        individuals (list[Individual]): the population of individuals.
+        selected_k (int): total number of individuals to select.
+    Returns:
+        list[Individual]: list of selected individuals.
+    """
+    n = len(individuals)
+
+    sorted_individuals = sorted(individuals, key=lambda individual: individual.fitness, reverse=True)
+    selected_individuals = []
+
+    for i, ind in enumerate(sorted_individuals):
+        n_copies = math.ceil((selected_k - i) / n)
+        selected_individuals.extend([ind] * n_copies)
+
+    return selected_individuals[:selected_k]
+
+
+def roulette(individuals, selected_k):
+    """
+        Roulette wheel selection (fitness-proportionate).
+
+        Args:
+            individuals (list[Individual]): population with precomputed fitness.
+            selected_k (int): number of individuals to select.
+        Returns:
+            list[Individual]: list of selected individuals (duplicates possible).
+    """
+    # Step 1: Compute total fitness and relative probabilities
+    total_fitness = sum(individual.fitness for individual in individuals)
+    probabilities = [individual.fitness / total_fitness for individual in individuals]
+
+
+    # Step 2: Compute cumulative relative probabilities
+    cumulative_probabilities = []
+    cumulative = 0.0
+    for p in probabilities:
+        cumulative += p
+        cumulative_probabilities.append(cumulative)
+
+
+    # Step 3: Select k individuals
+    selected_individuals = []
+    for n in range(selected_k):
+        r = random.random()
+
+        for i, q in enumerate(cumulative_probabilities):
+            lower = cumulative_probabilities[i - 1] if i > 0 else 0.0
+            if lower < r <= q:
+                selected_individuals.append(individuals[i])
+                break
+
+    return selected_individuals
+
 
 def universal(population, num_parents):
     return
