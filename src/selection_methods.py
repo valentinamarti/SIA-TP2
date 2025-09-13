@@ -23,6 +23,29 @@ def elite(individuals, selected_k):
 
     return selected_individuals[:selected_k]
 
+def _select_from_cumulative(individuals, pointers, aptitude_function):
+    """Auxiliary: given pointers and fitness, return selected individuals."""
+    # Step 1: Compute total fitness and relative probabilities
+    total_aptitude = sum(aptitude_function(ind) for ind in individuals)
+    probabilities = [aptitude_function(ind) / total_aptitude for ind in individuals]
+
+    # Step 2: Compute cumulative relative probabilities
+    cumulative_probabilities = []
+    cumulative = 0.0
+    for p in probabilities:
+        cumulative += p
+        cumulative_probabilities.append(cumulative)
+
+    # Step 3: Select k individuals
+    selected = []
+    for r in pointers:
+        for i, q in enumerate(cumulative_probabilities):
+            lower = cumulative_probabilities[i - 1] if i > 0 else 0.0
+            if lower < r <= q:
+                selected.append(individuals[i])
+                break
+    return selected
+
 
 def roulette(individuals, selected_k, aptitude_function = lambda ind: ind.fitness):
     """
@@ -34,35 +57,25 @@ def roulette(individuals, selected_k, aptitude_function = lambda ind: ind.fitnes
         Returns:
             list[Individual]: list of selected individuals (duplicates possible).
     """
-    # Step 1: Compute total fitness and relative probabilities
-    total_aptitude = sum(aptitude_function(individual) for individual in individuals)
-    probabilities = [aptitude_function(individual) / total_aptitude for individual in individuals]
+    pointers = sorted(random.random() for _ in range(selected_k))
+    return _select_from_cumulative(individuals, pointers, aptitude_function)
 
 
-    # Step 2: Compute cumulative relative probabilities
-    cumulative_probabilities = []
-    cumulative = 0.0
-    for p in probabilities:
-        cumulative += p
-        cumulative_probabilities.append(cumulative)
+def universal(individuals, selected_k, aptitude_function=lambda ind: ind.fitness):
+    """
+       Universal Selection
+       Like roulette selection but generates k evenly spaced pointers.
 
+       Args:
+           individuals (list[Individual]): population with precomputed fitness.
+           selected_k (int): number of individuals to select.
+       Returns:
+           list[Individual]: list of selected individuals (duplicates possible).
+    """
+    r = random.random() / selected_k
+    pointers = [r + j / selected_k for j in range(selected_k)]
+    return _select_from_cumulative(individuals, pointers, aptitude_function)
 
-    # Step 3: Select k individuals
-    selected_individuals = []
-    for n in range(selected_k):
-        r = random.random()
-
-        for i, q in enumerate(cumulative_probabilities):
-            lower = cumulative_probabilities[i - 1] if i > 0 else 0.0
-            if lower < r <= q:
-                selected_individuals.append(individuals[i])
-                break
-
-    return selected_individuals
-
-
-def universal(population, num_parents):
-    return
 
 def boltzmann(population, num_parents, temperature=1.0):
     """    
