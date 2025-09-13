@@ -35,8 +35,22 @@ def mutate_individual(mutation_method: str, ind: Individual, size: tuple[int, in
         return new_ind
 
     def limited_multi_gen(ind, prob):
+        """
+        Limited multi gen mutation: muta un número limitado de polígonos (máximo 10).
+        Selecciona aleatoriamente qué polígonos mutar y los muta con la probabilidad dada.
+        """
+        new_ind = ind.copy()
         
-        return ind.copy()
+        max_mutations = min(10, len(new_ind.polygons))
+        num_mutations = random.randint(1, max_mutations)
+        
+        polygons_to_mutate = random.sample(range(len(new_ind.polygons)), num_mutations)
+        
+        for i in polygons_to_mutate:
+            if random.random() < prob:
+                new_ind.polygons[i] = mutate_gen(new_ind.polygons[i], prob)
+        
+        return new_ind
 
     def uniform_multi_gen(ind, prob):
         """
