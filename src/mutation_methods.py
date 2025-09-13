@@ -1,8 +1,10 @@
 from utils.polygon import Individual, PolygonGene
-import random
 from typing import List
+from utils.polygon import create_random_polygon_gene
+import random
 import numpy as np
 
+MAX_POLYGONS = 100
 
 def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
     new_polygon = polygon.copy()
@@ -24,17 +26,33 @@ def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
         new_polygon.color = (b, g, r, a)
     return new_polygon
 
+def add_polygon(ind, prob, max_polygons):
+        """
+        Mutación estructural: puede agregar polígonos al individuo.
+        Mantiene la longitud del genoma menor o igual a max_polygons
+        """
+        new_ind = ind.copy()
 
-def mutate_individual(mutation_method: str, ind: Individual, size: tuple[int, int], prob=0.1) -> Individual:
+        if len(new_ind.polygons) < max_polygons:
+            new_polygon = create_random_polygon_gene(ind.polygons[0].n_vertices) 
+            new_ind.polygons.append(new_polygon)
+                
+        return new_ind
+
+
+def mutate_individual(mutation_method: str, ind: Individual, size: tuple[int, int], prob=0.1, structural: bool = False) -> Individual:
     def gen(ind: Individual, prob: float) -> Individual:
         new_ind = ind.copy()
         if random.random() < prob:
             idx = random.randrange(len(new_ind.polygons))
             mutated = mutate_gen(new_ind.polygons[idx], prob)
             new_ind.polygons[idx] = mutated
+
+        if structural and random.random() < prob:
+            new_ind = add_polygon(new_ind, prob, MAX_POLYGONS)
         return new_ind
 
-    def limited_multi_gen(ind, prob):
+    def limited_multi_gen(ind, prob, structural: bool = False):
         """
         Limited multi gen mutation: muta un número limitado de polígonos (máximo 10).
         Selecciona aleatoriamente qué polígonos mutar y los muta con la probabilidad dada.
@@ -50,9 +68,12 @@ def mutate_individual(mutation_method: str, ind: Individual, size: tuple[int, in
             if random.random() < prob:
                 new_ind.polygons[i] = mutate_gen(new_ind.polygons[i], prob)
         
+        if structural and random.random() < prob:
+            new_ind = add_polygon(new_ind, prob, MAX_POLYGONS)
+
         return new_ind
 
-    def uniform_multi_gen(ind, prob):
+    def uniform_multi_gen(ind, prob, structural: bool = False):
         """
         Uniform multi gen mutation: cada polígono tiene probabilidad independiente 
         de ser mutado, sin límite en el número de mutaciones.
@@ -63,10 +84,14 @@ def mutate_individual(mutation_method: str, ind: Individual, size: tuple[int, in
             if random.random() < prob:
                 # Mutar este polígono específico
                 new_ind.polygons[i] = mutate_gen(new_ind.polygons[i], prob)
+
+        if structural and random.random() < prob:
+            new_ind = add_polygon(new_ind, prob, MAX_POLYGONS)
         
         return new_ind
 
-    def complete(ind, prob):
+    def complete(ind, prob, structural: bool = False):
+        
         return ind.copy()
 
     methods = {
