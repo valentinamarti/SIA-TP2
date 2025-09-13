@@ -9,13 +9,14 @@ from utils.draw import save_rendered
 from utils.image import load_image
 from utils.polygon import create_random_individual, Individual
 from src.fitness import FitnessEvaluator
-GENERATION_AMOUNT = 10000
+GENERATION_AMOUNT = 20000
 
 
 def run_ga(image: np.ndarray,
            polygon_sides: int = 3,
            selection_method: str = "tournament",
            mutation_method: str = "uniform_multi_gen",
+           mutate_structure: bool = False,
            crossover: str = "one_point",
            population_size: int = 60,
            replacement_method: str = "traditional",
@@ -29,7 +30,7 @@ def run_ga(image: np.ndarray,
     fitness_evaluator = FitnessEvaluator(image)
     fitness_evaluator.evaluate_population(population)
 
-    for gen in range(GENERATION_AMOUNT): # 200 generations
+    for gen in range(GENERATION_AMOUNT):
         new_population: List[Individual] = []
 
         fitness_evaluator.evaluate_population(population)
@@ -50,7 +51,7 @@ def run_ga(image: np.ndarray,
 
         # mutate individuals
         for ind in parents:
-            mutated = mutate_individual(mutation_method, ind, size, prob=0.2)
+            mutated = mutate_individual(mutation_method, ind, size, prob=0.2, structural=mutate_structure)
             new_population.append(mutated)
 
         # new generations
@@ -64,12 +65,20 @@ def run_ga(image: np.ndarray,
     best = population[0]
     save_rendered(best, size,filename = "results/output_rgb.png",)
     save_rendered(best, size,filename = "results/output_rgba.png", with_alpha=True)
-    print(f"Fitness: {best.fitness}")
+    print(f"Fitness: {best.fitness}\nPolígonos: {len(best.polygons)}")
     return {"best": best}
 
 
 if __name__ == "__main__":
-    target_img = load_image("images/starry_night.png", size=(128,128))
-    result = run_ga(target_img)
+    target_img = load_image("images/blue_square.png", size=(128,128))
+    result = run_ga(target_img,
+                    max_polygons=40,
+                    population_size=10,
+                    mutate_structure=True,
+                    mutation_method="uniform_multi_gen",
+                    selection_method="tournament",
+                    crossover="one_point",
+                    replacement_method="traditional",
+                    polygon_sides=3)
 
 

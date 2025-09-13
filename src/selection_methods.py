@@ -52,6 +52,7 @@ def roulette(individuals, selected_k, aptitude_function = lambda ind: ind.fitnes
         Roulette wheel selection (fitness-proportionate).
 
         Args:
+            aptitude_function: function to compute the aptitude of an individual.
             individuals (list[Individual]): population with precomputed fitness.
             selected_k (int): number of individuals to select.
         Returns:
