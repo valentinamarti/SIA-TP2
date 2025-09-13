@@ -24,7 +24,7 @@ def elite(individuals, selected_k):
     return selected_individuals[:selected_k]
 
 
-def roulette(individuals, selected_k, pseudo_aptitude_function = lambda ind: ind.fitness):
+def roulette(individuals, selected_k, aptitude_function = lambda ind: ind.fitness):
     """
         Roulette wheel selection (fitness-proportionate).
 
@@ -35,8 +35,8 @@ def roulette(individuals, selected_k, pseudo_aptitude_function = lambda ind: ind
             list[Individual]: list of selected individuals (duplicates possible).
     """
     # Step 1: Compute total fitness and relative probabilities
-    total_pseudo_aptitude = sum(pseudo_aptitude_function(individual) for individual in individuals)
-    probabilities = [pseudo_aptitude_function(individual) / total_pseudo_aptitude for individual in individuals]
+    total_aptitude = sum(aptitude_function(individual) for individual in individuals)
+    probabilities = [aptitude_function(individual) / total_aptitude for individual in individuals]
 
 
     # Step 2: Compute cumulative relative probabilities
@@ -67,8 +67,6 @@ def universal(population, num_parents):
 def boltzmann(population, num_parents, temperature=1.0):
     """    
     Fórmula: ExpVal(i, g, T) = (e^(f(i)/T)) / (<e^(f(x)/T)>g)
-    Returns:
-        list[Individual]: lista de individuos seleccionados
     """
     if not population:
         return []
@@ -77,11 +75,11 @@ def boltzmann(population, num_parents, temperature=1.0):
     
     avg_exp_fitness = np.mean(exp_fitness)
     
-    def boltzmann_pseudo_aptitude(individual):
+    def boltzmann_aptitude(individual):
         exp_val = math.exp(individual.fitness / temperature)
         return exp_val / avg_exp_fitness
     
-    return roulette(population, num_parents, boltzmann_pseudo_aptitude)
+    return roulette(population, num_parents, boltzmann_aptitude)
 
 import random
 
@@ -121,7 +119,26 @@ def tournament(population, num_parents, deterministic=True):
         return tournament_probabilistic(population, num_parents)
 
 def ranking(population, num_parents):
-    return
+    """
+    Fórmula: f'(i) = (N - rank(i)) / N
+    - N: tamaño de la población
+    - rank(i): ranking del individuo (1 = mejor fitness, N = peor fitness)
+    """
+    if not population:
+        return []
+    
+    N = len(population)
+    
+    # Ordenar población por fitness (mayor a menor)
+    sorted_population = sorted(population, key=lambda ind: ind.fitness, reverse=True)
+    
+    def ranking_aptitude(individual):
+        # Encontrar el ranking del individuo (1 = mejor, N = peor)
+        rank = sorted_population.index(individual) + 1
+        # Aplicar fórmula: f'(i) = (N - rank(i)) / N
+        return (N - rank) / N
+    
+    return roulette(population, num_parents, ranking_aptitude)
 
 
 def select_individuals(selection_method: str, population: list, num_parents: int, **kwargs):
