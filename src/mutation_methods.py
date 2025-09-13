@@ -16,12 +16,11 @@ def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
         new_polygon.vertices[i] = (new_x, new_y)
     # mutar color
     if random.random() < prob:
-        b, g, r, a = new_polygon.color
         b = int(np.clip(b + random.randint(-10, 10), 0, 255))
         g = int(np.clip(g + random.randint(-10, 10), 0, 255))
         r = int(np.clip(r + random.randint(-10, 10), 0, 255))
         a = int(np.clip(a + random.randint(-10, 10), 0, 255))
-        new_polygon.color = (b, g, r, a)
+        new_ygon.color = (b, g, r, a)
     return new_polygon
 
 
@@ -35,10 +34,22 @@ def mutate_individual(mutation_method: str, ind: Individual, size: tuple[int, in
         return new_ind
 
     def limited_multi_gen(ind, prob):
+        
         return ind.copy()
 
     def uniform_multi_gen(ind, prob):
-        return ind.copy()
+        """
+        Uniform multi gen mutation: cada polígono tiene probabilidad independiente 
+        de ser mutado, sin límite en el número de mutaciones.
+        """
+        new_ind = ind.copy()
+        
+        for i in range(len(new_ind.polygons)):
+            if random.random() < prob:
+                # Mutar este polígono específico
+                new_ind.polygons[i] = mutate_gen(new_ind.polygons[i], prob)
+        
+        return new_ind
 
     def complete(ind, prob):
         return ind.copy()
