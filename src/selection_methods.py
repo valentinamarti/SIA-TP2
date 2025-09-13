@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 def elite(individuals, selected_k):
     """
@@ -23,7 +24,7 @@ def elite(individuals, selected_k):
     return selected_individuals[:selected_k]
 
 
-def roulette(individuals, selected_k):
+def roulette(individuals, selected_k, pseudo_aptitude_function = lambda ind: ind.fitness):
     """
         Roulette wheel selection (fitness-proportionate).
 
@@ -34,8 +35,8 @@ def roulette(individuals, selected_k):
             list[Individual]: list of selected individuals (duplicates possible).
     """
     # Step 1: Compute total fitness and relative probabilities
-    total_fitness = sum(individual.fitness for individual in individuals)
-    probabilities = [individual.fitness / total_fitness for individual in individuals]
+    total_pseudo_aptitude = sum(pseudo_aptitude_function(individual) for individual in individuals)
+    probabilities = [pseudo_aptitude_function(individual) / total_pseudo_aptitude for individual in individuals]
 
 
     # Step 2: Compute cumulative relative probabilities
@@ -64,7 +65,23 @@ def universal(population, num_parents):
     return
 
 def boltzmann(population, num_parents, temperature=1.0):
-    return
+    """    
+    Fórmula: ExpVal(i, g, T) = (e^(f(i)/T)) / (<e^(f(x)/T)>g)
+    Returns:
+        list[Individual]: lista de individuos seleccionados
+    """
+    if not population:
+        return []
+    
+    exp_fitness = [math.exp(individual.fitness / temperature) for individual in population]
+    
+    avg_exp_fitness = np.mean(exp_fitness)
+    
+    def boltzmann_pseudo_aptitude(individual):
+        exp_val = math.exp(individual.fitness / temperature)
+        return exp_val / avg_exp_fitness
+    
+    return roulette(population, num_parents, boltzmann_pseudo_aptitude)
 
 import random
 
@@ -81,7 +98,7 @@ def tournament_deterministic(population, num_parents, k=3):
 def tournament_probabilistic(population, num_parents, k=3, probs=None):
     """Probabilistic tournament selection."""
     if probs is None:
-        probs = [0.7, 0.2, 0.1] # 70%, 20%, 10%
+        probs = [0.7, 0.2, 0.1] 
 
     parents = []
     for _ in range(num_parents):
