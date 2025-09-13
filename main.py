@@ -1,6 +1,7 @@
-import random
 from typing import Dict, Any, List
 import numpy as np
+
+from src.generations_methods import replace_population_traditional, replace_population_young_bias
 from src.mutation_methods import mutate_individual
 from src.selection_methods import select_individuals
 from utils.draw import save_rendered
@@ -16,6 +17,7 @@ def run_ga(image: np.ndarray,
            mutation_method: str = "gen",
            crossover: str = "one_point",
            population_size: int = 40,
+           replacement_method: str = "traditional",
            max_polygons: int = None) -> Dict[str, Any]:
     size = (image.shape[1], image.shape[0])  # (width, height)
     num_polygons = 10 if max_polygons is None else max_polygons
@@ -26,17 +28,24 @@ def run_ga(image: np.ndarray,
 
     for gen in range(GENERATION_AMOUNT): # 200 generations
         new_population: List[Individual] = []
+
+        # TODO: calculate new generation's fitness
+
+        # selections
+        parents = select_individuals(selection_method, population, population_size)
+
         # TODO: crossover
 
         # mutate individuals
-        for ind in population:
+        for ind in parents:
             mutated = mutate_individual(mutation_method, ind, size, prob=0.2)
             new_population.append(mutated)
 
-        # TODO: calculate new generation's fitness
-        # Selección
-        population = select_individuals(selection_method, new_population, population_size)
-        # population = new_population
+        if replacement_method == "traditional":
+            population = replace_population_traditional(population, new_population, population_size)
+        elif replacement_method == "youth_bias":
+            population = replace_population_young_bias(population, new_population, population_size)
+
         print(f"Generación {gen + 1}: {len(population)} individuos")
 
     best = population[0]
@@ -47,3 +56,5 @@ def run_ga(image: np.ndarray,
 if __name__ == "__main__":
     target_img = load_image("images/blue_square.png", size=(128,128))
     result = run_ga(target_img)
+
+
