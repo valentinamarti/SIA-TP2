@@ -91,8 +91,18 @@ def mutate_individual(mutation_method: str, ind: Individual, size: tuple[int, in
         return new_ind
 
     def complete(ind, prob, structural: bool = False):
+        """
+        Complete mutation: muta todos los polígonos del individuo, con la probabilidad dada.
+        """
+        new_ind = ind.copy()
         
-        return ind.copy()
+        for i in range(len(new_ind.polygons)):
+            new_ind.polygons[i] = mutate_gen(new_ind.polygons[i], prob)
+        
+        if structural and random.random() < prob:
+            new_ind = add_polygon(new_ind, prob, MAX_POLYGONS)
+        
+        return new_ind
 
     methods = {
         "gen": gen,
