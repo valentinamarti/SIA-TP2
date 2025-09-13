@@ -8,16 +8,16 @@ from src.selection_methods import select_individuals
 from utils.draw import save_rendered
 from utils.image import load_image
 from utils.polygon import create_random_individual, Individual
-
-GENERATION_AMOUNT = 200
+from src.fitness import FitnessEvaluator
+GENERATION_AMOUNT = 10000
 
 
 def run_ga(image: np.ndarray,
            polygon_sides: int = 3,
            selection_method: str = "tournament",
-           mutation_method: str = "gen",
+           mutation_method: str = "uniform_multi_gen",
            crossover: str = "one_point",
-           population_size: int = 40,
+           population_size: int = 60,
            replacement_method: str = "traditional",
            max_polygons: int = None) -> Dict[str, Any]:
     size = (image.shape[1], image.shape[0])  # (width, height)
@@ -26,11 +26,13 @@ def run_ga(image: np.ndarray,
         create_random_individual(num_polygons, polygon_sides)
         for _ in range(population_size)
     ]
+    fitness_evaluator = FitnessEvaluator(image)
+    fitness_evaluator.evaluate_population(population)
 
     for gen in range(GENERATION_AMOUNT): # 200 generations
         new_population: List[Individual] = []
 
-        # TODO: calculate new generation's fitness
+        fitness_evaluator.evaluate_population(population)
 
         # selections
         parents = select_individuals(selection_method, population, population_size)
@@ -57,15 +59,17 @@ def run_ga(image: np.ndarray,
         elif replacement_method == "youth_bias":
             population = replace_population_young_bias(population, new_population, population_size)
 
-        print(f"Generación {gen + 1}: {len(population)} individuos")
+        # print(f"Generación {gen + 1}: {len(population)} individuos")
 
     best = population[0]
-    save_rendered(best, size)
+    save_rendered(best, size,filename = "results/output_rgb.png",)
+    save_rendered(best, size,filename = "results/output_rgba.png", with_alpha=True)
+    print(f"Fitness: {best.fitness}")
     return {"best": best}
 
 
 if __name__ == "__main__":
-    target_img = load_image("images/blue_square.png", size=(128,128))
+    target_img = load_image("images/starry_night.png", size=(128,128))
     result = run_ga(target_img)
 
 
