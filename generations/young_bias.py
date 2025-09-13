@@ -1,4 +1,4 @@
-def replace_population_young_bias(current_population, offspring, fitness, n_selected):
+def replace_population_young_bias(current_population, offspring, n_selected):
     """
         Generate the next generation with young bias:
 
@@ -8,21 +8,22 @@ def replace_population_young_bias(current_population, offspring, fitness, n_sele
         Args:
             current_population (list[Individual]): current generation
             offspring (list[Individual]): new individuals generated via crossovers/mutation
-            fitness (function): function to evaluate fitness of an individual
             n_selected (int): number of individuals to keep for next generation
 
         Returns:
             list[Individual]: next generation of size n_selected
         """
     k = len(offspring)
-    sorted_offspring = sorted(offspring, key=fitness, reverse=True)
+    sorted_offspring = sorted(offspring, key=lambda individual: individual.fitness, reverse=True)
+
 
     if k >= n_selected:
         # More children than wanted individuals
         next_generation = sorted_offspring[:n_selected]
     else:
         n_remaining = n_selected - k
-        sorted_current = sorted(current_population, key=fitness, reverse=True)
+        sorted_current = sorted(current_population, key=lambda individual: individual.fitness, reverse=True)
+
         next_generation = sorted_offspring + sorted_current[:n_remaining]
 
     return next_generation

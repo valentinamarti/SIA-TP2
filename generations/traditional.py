@@ -4,7 +4,7 @@ from selections.elite import elite
 from utils.polygon import Individual
 
 
-def replace_population_traditional(current_population, offspring, fitness, n_selected):
+def replace_population_traditional(current_population, offspring, n_selected):
     """
         Generate the next generation by selecting n_selected individuals from
         the union of current_population + offspring.
@@ -19,6 +19,6 @@ def replace_population_traditional(current_population, offspring, fitness, n_sel
             list[Individual]: next generation of size n_selected
     """
     combined_population = offspring + current_population
-    sorted_combined_population = sorted(combined_population, key=fitness, reverse=True)
+    sorted_combined_population = sorted(combined_population, key=lambda individual: individual.fitness, reverse=True)
 
     return sorted_combined_population[:n_selected]
