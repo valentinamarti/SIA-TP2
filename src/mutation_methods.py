@@ -16,11 +16,12 @@ def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
         new_polygon.vertices[i] = (new_x, new_y)
     # mutar color
     if random.random() < prob:
+        b, g, r, a = new_polygon.color
         b = int(np.clip(b + random.randint(-10, 10), 0, 255))
         g = int(np.clip(g + random.randint(-10, 10), 0, 255))
         r = int(np.clip(r + random.randint(-10, 10), 0, 255))
         a = int(np.clip(a + random.randint(-10, 10), 0, 255))
-        new_ygon.color = (b, g, r, a)
+        new_polygon.color = (b, g, r, a)
     return new_polygon
 
 
