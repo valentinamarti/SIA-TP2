@@ -1,6 +1,7 @@
 from typing import Dict, Any, List
 import numpy as np
 
+from src.crossover_methods import one_point_crossover, uniform_crossover
 from src.generations_methods import replace_population_traditional, replace_population_young_bias
 from src.mutation_methods import mutate_individual
 from src.selection_methods import select_individuals
@@ -34,13 +35,23 @@ def run_ga(image: np.ndarray,
         # selections
         parents = select_individuals(selection_method, population, population_size)
 
-        # TODO: crossover
+        # crossover
+        for i in range(0, len(parents), 2):
+            p1, p2 = parents[i], parents[i + 1]
+            if np.random.rand() < 0.8:  # crossover probability
+                if crossover == "one_point":
+                    c1, c2 = one_point_crossover(p1, p2)
+                elif crossover == "uniform":
+                    c1, c2 = uniform_crossover(p1, p2)
+            else:
+                c1, c2 = p1.copy(), p2.copy()  # sin crossover, se copian tal cual
 
         # mutate individuals
         for ind in parents:
             mutated = mutate_individual(mutation_method, ind, size, prob=0.2)
             new_population.append(mutated)
 
+        # new generations
         if replacement_method == "traditional":
             population = replace_population_traditional(population, new_population, population_size)
         elif replacement_method == "youth_bias":
