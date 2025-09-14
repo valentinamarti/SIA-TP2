@@ -9,7 +9,7 @@ from utils.draw import save_rendered
 from utils.image import load_image
 from utils.polygon import create_random_individual, Individual
 from src.fitness import FitnessEvaluator
-GENERATION_AMOUNT = 20000
+GENERATION_AMOUNT = 100000
 
 
 def run_ga(image: np.ndarray,
@@ -70,10 +70,10 @@ def run_ga(image: np.ndarray,
 
 
 if __name__ == "__main__":
-    target_img = load_image("images/blue_square.png", size=(128,128))
+    target_img = load_image("images/argentina.png", size=(128,128))
     result = run_ga(target_img,
                     max_polygons=40,
-                    population_size=10,
+                    population_size=40,
                     mutate_structure=True,
                     mutation_method="uniform_multi_gen",
                     selection_method="tournament",
