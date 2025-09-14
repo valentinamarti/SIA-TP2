@@ -3,6 +3,7 @@ from typing import List, Dict
 import numpy as np
 import pygame
 import cv2
+import os
 
 from utils.polygon import Individual, PolygonGene
 
@@ -50,6 +51,7 @@ def save_rendered(
     - `background_rgba`: color de fondo cuando `with_alpha=True`. Usar A=0 para fondo transparente.
     """
     rgb = render_individual(individual, size)
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     cv2.imwrite(filename, cv2.cvtColor(rgb, cv2.COLOR_RGBA2BGRA))
     print(f"Saved {filename}")
 
