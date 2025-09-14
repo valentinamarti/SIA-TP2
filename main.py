@@ -64,7 +64,6 @@ def run_ga(image: np.ndarray,
 
     best = population[0]
     save_rendered(best, size,filename = "results/output_rgb.png",)
-    save_rendered(best, size,filename = "results/output_rgba.png", with_alpha=True)
     print(f"Fitness: {best.fitness}\nPolígonos: {len(best.polygons)}")
     return {"best": best}
 
