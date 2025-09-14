@@ -9,7 +9,7 @@ from utils.draw import save_rendered
 from utils.image import load_image
 from utils.polygon import create_random_individual, Individual
 from src.fitness import FitnessEvaluator
-GENERATION_AMOUNT = 20000
+GENERATION_AMOUNT = 200000
 
 
 def run_ga(image: np.ndarray,
@@ -20,7 +20,8 @@ def run_ga(image: np.ndarray,
            crossover: str = "one_point",
            population_size: int = 60,
            replacement_method: str = "traditional",
-           max_polygons: int = None) -> Dict[str, Any]:
+           max_polygons: int = None,
+           target_error: float | None = None) -> Dict[str, Any]:
     size = (image.shape[1], image.shape[0])  # (width, height)
     num_polygons = 10 if max_polygons is None else max_polygons
     population: List[Individual] = [
@@ -29,11 +30,12 @@ def run_ga(image: np.ndarray,
     ]
     fitness_evaluator = FitnessEvaluator(image)
     fitness_evaluator.evaluate_population(population)
-
-    for gen in range(GENERATION_AMOUNT):
+    population = sorted(population, key=lambda ind: ind.fitness, reverse=True)
+    gen = 0
+    while gen < GENERATION_AMOUNT and (
+        target_error is None or population[0].error is None or population[0].error > target_error
+    ):
         new_population: List[Individual] = []
-
-        fitness_evaluator.evaluate_population(population)
 
         # selections
         parents = select_individuals(selection_method, population, population_size)
@@ -59,6 +61,10 @@ def run_ga(image: np.ndarray,
             population = replace_population_traditional(population, new_population, population_size)
         elif replacement_method == "youth_bias":
             population = replace_population_young_bias(population, new_population, population_size)
+        
+        # Reordenamos y avanzamos gen para condición del while
+        fitness_evaluator.evaluate_population(population)
+        gen += 1
 
         # print(f"Generación {gen + 1}: {len(population)} individuos")
 
@@ -78,6 +84,8 @@ if __name__ == "__main__":
                     selection_method="tournament",
                     crossover="one_point",
                     replacement_method="traditional",
-                    polygon_sides=3)
+                    polygon_sides=3,
+                    target_error=0.0001)
+
 
 
