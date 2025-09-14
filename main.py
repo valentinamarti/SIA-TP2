@@ -101,7 +101,21 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    target_img = load_image("images/blue_square.png", size=(128,128))
+    target_img = load_image(args.image, size=tuple(args.size))
+
+    print("\nEjecutando AG con los siguientes parámetros:")
+    print(f" Imagen objetivo       : {args.image}")
+    print(f" Tamaño                : {args.size}")
+    print(f" Máx. polígonos        : {args.max_polygons}")
+    print(f" Lados por polígono    : {args.polygon_sides}")
+    print(f" Tamaño población      : {args.population_size}")
+    print(f" Generaciones máx.     : {args.generation_amount}")
+    print(f" Método de selección   : {args.selection_method}")
+    print(f" Método de cruce       : {args.crossover}")
+    print(f" Método de mutación    : {args.mutation_method}")
+    print(f" Mutación estructural  : {args.mutate_structure}")
+    print(f" Método de reemplazo   : {args.replacement_method}")
+    print(f" Error objetivo        : {args.target_error}\n")
 
     start = time.time()
     result = run_ga(target_img,
