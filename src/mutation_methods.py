@@ -20,7 +20,7 @@ def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
     # mutar color con nueva lógica
     if random.random() < prob:
         b, g, r, a = new_polygon.color
-        
+
         mutation_choice = random.random()
         
         if mutation_choice < (prob / 2):
@@ -30,7 +30,7 @@ def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
             r = random.randint(0, 255)
         elif mutation_choice < prob:
             # Hacer más transparente [prob/2 a prob)
-            a = int(np.clip(a - random.randint(20, 50), 0, 255))
+            a = int(np.clip(a - random.randint(-20, 20), 0, 255))
         elif mutation_choice < min(1.3 * prob, 1.0):
             # Aclarar el color [prob a 1.2*prob)
             b = int(np.clip(b + random.randint(10, 30), 0, 255))
