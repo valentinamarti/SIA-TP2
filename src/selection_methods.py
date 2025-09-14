@@ -126,12 +126,6 @@ def tournament_probabilistic(population, num_parents, k=3, probs=None):
     return parents
 
 
-def tournament(population, num_parents, deterministic=True):
-    if deterministic:
-        return tournament_deterministic(population, num_parents)
-    else:
-        return tournament_probabilistic(population, num_parents)
-
 def ranking(population, num_parents):
     """
     Fórmula: f'(i) = (N - rank(i)) / N
@@ -164,6 +158,7 @@ SELECTION_METHODS = {
     "roulette": roulette,
     "universal": universal,
     "boltzmann": boltzmann,
-    "tournament": tournament,
+    "tournament_deterministic": tournament_deterministic,
+    "tournament_probabilistic": tournament_probabilistic,
     "ranking": ranking
 }
