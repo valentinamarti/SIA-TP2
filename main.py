@@ -7,7 +7,7 @@ import cv2
 import csv
 
 from typing import Dict, Any, List
-from src.crossover_methods import one_point_crossover, uniform_crossover
+from src.crossover_methods import one_point_crossover, uniform_crossover, two_point_crossover
 from src.generations_methods import replace_population_traditional, replace_population_young_bias
 from src.mutation_methods import mutate_individual
 from src.selection_methods import select_individuals
@@ -86,7 +86,9 @@ def run_ga(image: np.ndarray,
             if np.random.rand() < 0.8:  # crossover probability
                 if crossover == "one_point":
                     c1, c2 = one_point_crossover(p1, p2)
-                else:  # crossover == "uniform"
+                elif crossover == "two_point":
+                    c1, c2 = two_point_crossover(p1, p2)
+                elif crossover == "uniform_crossover":
                     c1, c2 = uniform_crossover(p1, p2)
             else:
                 c1, c2 = p1.copy(), p2.copy()  # sin crossover
