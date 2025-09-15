@@ -80,8 +80,7 @@ def main():
         "max_polygons": 40,
         "polygon_sides": 3,
         "mutate_structure": False,
-        #"target_error": 0.05,
-        "target_error": 0.03,
+        "target_error": 0.05,
         "generation_amount": 4000,
     }
 
