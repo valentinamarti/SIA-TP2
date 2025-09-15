@@ -29,7 +29,7 @@ def mutate_gen(polygon: PolygonGene, prob: float) -> PolygonGene:
             g = random.randint(0, 255)
             r = random.randint(0, 255)
         elif mutation_choice < prob:
-            # Hacer más transparente [prob/2 a prob)
+            # Modificar la transparencia [prob/2 a prob)
             a = int(np.clip(a - random.randint(-20, 20), 0, 255))
         elif mutation_choice < min(1.3 * prob, 1.0):
             # Aclarar el color [prob a 1.2*prob)
