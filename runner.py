@@ -103,7 +103,7 @@ def main():
                    "results/exp3.csv", "results/exp3_history.csv")
 
     # Experimento 4: Balanceado
-    exp4 = {**base_params, "selection": "ranking", "crossover": "anular",
+    exp4 = {**base_params, "selection": "ranking", "crossover": "uniform_crossover",
             "mutation": "uniform_multi_gen", "replacement": "youth_bias"}
     run_experiment("Experimento 4: Balanceado", exp4,
                    "results/exp4.csv", "results/exp4_history.csv")
