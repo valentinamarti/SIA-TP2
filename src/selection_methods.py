@@ -2,7 +2,7 @@ import math
 import random
 import numpy as np
 
-def elite(individuals, selected_k):
+def elite(individuals, selected_k, **kwargs):
     """
     Elite selection using n(i) = ceil((k - i)/n)
 
@@ -47,7 +47,7 @@ def _select_from_cumulative(individuals, pointers, aptitude_function):
     return selected
 
 
-def roulette(individuals, selected_k, aptitude_function = lambda ind: ind.fitness):
+def roulette(individuals, selected_k, aptitude_function = lambda ind: ind.fitness, **kwargs):
     """
         Roulette wheel selection (fitness-proportionate).
 
@@ -62,7 +62,7 @@ def roulette(individuals, selected_k, aptitude_function = lambda ind: ind.fitnes
     return _select_from_cumulative(individuals, pointers, aptitude_function)
 
 
-def universal(individuals, selected_k, aptitude_function=lambda ind: ind.fitness):
+def universal(individuals, selected_k, aptitude_function=lambda ind: ind.fitness, **kwargs):
     """
        Universal Selection
        Like roulette selection but generates k evenly spaced pointers.
@@ -78,26 +78,28 @@ def universal(individuals, selected_k, aptitude_function=lambda ind: ind.fitness
     return _select_from_cumulative(individuals, pointers, aptitude_function)
 
 
-def boltzmann(population, num_parents, temperature=1.0):
-    """    
+def boltzmann(population, num_parents, gen=1, T0=1.0, c=2.0):
+    """
     Fórmula: ExpVal(i, g, T) = (e^(f(i)/T)) / (<e^(f(x)/T)>g)
+    Temperatura decrece logarítmicamente con la generación.
     """
     if not population:
         return []
-    
-    exp_fitness = [math.exp(individual.fitness / temperature) for individual in population]
-    
+
+    # Temperatura logarítmica
+    T = T0 / math.log(gen + c)
+
+    exp_fitness = [math.exp(ind.fitness / T) for ind in population]
     avg_exp_fitness = np.mean(exp_fitness)
-    
-    def boltzmann_aptitude(individual):
-        exp_val = math.exp(individual.fitness / temperature)
-        return exp_val / avg_exp_fitness
-    
+
+    def boltzmann_aptitude(ind):
+        return math.exp(ind.fitness / T) / avg_exp_fitness
+
     return roulette(population, num_parents, boltzmann_aptitude)
 
 import random
 
-def tournament_deterministic(population, num_parents, k=3):
+def tournament_deterministic(population, num_parents, k=3, **kwargs):
     """Deterministic tournament selection."""
     parents = []
     for _ in range(num_parents):
@@ -107,7 +109,7 @@ def tournament_deterministic(population, num_parents, k=3):
     return parents
 
 
-def tournament_probabilistic(population, num_parents, k=3, probs=None):
+def tournament_probabilistic(population, num_parents, k=3, probs=None, **kwargs):
     """Probabilistic tournament selection."""
     if probs is None:
         probs = [0.7, 0.2, 0.1] 
@@ -126,7 +128,7 @@ def tournament_probabilistic(population, num_parents, k=3, probs=None):
     return parents
 
 
-def ranking(population, num_parents):
+def ranking(population, num_parents, **kwargs):
     """
     Fórmula: f'(i) = (N - rank(i)) / N
     - N: tamaño de la población

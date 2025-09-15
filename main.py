@@ -75,7 +75,7 @@ def run_ga(image: np.ndarray,
         target_error is None or population[0].error is None or population[0].error > target_error
     ):
         # selections
-        parents = select_individuals(selection_method, population, population_size)
+        parents = select_individuals(selection_method, population, population_size, gen=gen)
 
         # crossover
         children = []
