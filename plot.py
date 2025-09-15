@@ -121,18 +121,168 @@ def plot_time_bar():
     plt.close()
     print(f"[OK] Guardado {outfile}")
 
+def plot_diversity_avg_per_setup():
+    """Genera un gráfico de diversidad promedio por setup (uno por archivo)."""
+    for setup_name, setup_id in SETUPS:
+        history_file = os.path.join(RESULTS_DIR, f"{setup_id}_history.csv")
+        if not os.path.exists(history_file):
+            print(f"[WARN] No existe {history_file}")
+            continue
+
+        df = pd.read_csv(history_file)
+
+        # Agrupar por generación y calcular promedio y std de diversidad
+        grouped = df.groupby("generation")["diversity"]
+        mean_div = grouped.mean()
+        std_div = grouped.std()
+
+        generations = mean_div.index.values
+
+        # Graficar curva + banda
+        plt.figure(figsize=(8, 5))
+        plt.plot(
+            generations,
+            mean_div,
+            label="Diversidad promedio",
+            color="blue",
+            linewidth=2,
+        )
+        plt.fill_between(
+            generations,
+            mean_div - std_div,
+            mean_div + std_div,
+            alpha=0.2,
+            color="blue",
+        )
+
+        plt.xlabel("Generación", fontsize=12)
+        plt.ylabel("Diversidad (std fitness)", fontsize=12)
+        plt.title(f"{setup_name} - Diversidad promedio", fontsize=14)
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.6)
+
+        outdir = os.path.join(RESULTS_DIR, setup_id)
+        os.makedirs(outdir, exist_ok=True)
+        outfile = os.path.join(outdir, "diversity_avg.png")
+        plt.tight_layout()
+        plt.savefig(outfile, dpi=150)
+        plt.close()
+        print(f"[OK] Guardado {outfile}")
+
+def plot_diversity_std_per_setup():
+    """Genera un gráfico de la diversidad promedio con banda de desvío por setup."""
+    for setup_name, setup_id in SETUPS:
+        history_file = os.path.join(RESULTS_DIR, f"{setup_id}_history.csv")
+        if not os.path.exists(history_file):
+            print(f"[WARN] No existe {history_file}")
+            continue
+
+        df = pd.read_csv(history_file)
+
+        # Agrupar por generación y calcular promedio y std de diversidad
+        grouped = df.groupby("generation")["diversity"]
+        mean_div = grouped.mean()
+        std_div = grouped.std()
+
+        generations = mean_div.index.values
+
+        # Graficar curva + banda de ±std
+        plt.figure(figsize=(8, 5))
+        plt.plot(
+            generations,
+            mean_div,
+            label="Diversidad promedio",
+            color="blue",
+            linewidth=2,
+        )
+        plt.fill_between(
+            generations,
+            mean_div - std_div,
+            mean_div + std_div,
+            alpha=0.2,
+            color="blue",
+            label="±1 std"
+        )
+
+        plt.xlabel("Generación", fontsize=12)
+        plt.ylabel("Diversidad (std fitness)", fontsize=12)
+        plt.title(f"{setup_name} - Diversidad promedio con desviación", fontsize=14)
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.6)
+
+        outdir = os.path.join(RESULTS_DIR, setup_id)
+        os.makedirs(outdir, exist_ok=True)
+        outfile = os.path.join(outdir, "diversity_std.png")
+        plt.tight_layout()
+        plt.savefig(outfile, dpi=150)
+        plt.close()
+        print(f"[OK] Guardado {outfile}")
+
+def plot_fitness_std_per_setup():
+    """Genera un gráfico del fitness promedio con banda de desvío por setup."""
+    for setup_name, setup_id in SETUPS:
+        history_file = os.path.join(RESULTS_DIR, f"{setup_id}_history.csv")
+        if not os.path.exists(history_file):
+            print(f"[WARN] No existe {history_file}")
+            continue
+
+        df = pd.read_csv(history_file)
+
+        # Agrupar por generación y calcular promedio y std del fitness
+        grouped = df.groupby("generation")["fitness"]
+        mean_fit = grouped.mean()
+        std_fit = grouped.std()
+
+        generations = mean_fit.index.values
+
+        # Graficar curva + banda de ±std
+        plt.figure(figsize=(8, 5))
+        plt.plot(
+            generations,
+            mean_fit,
+            label="Fitness promedio",
+            color="orange",
+            linewidth=2,
+        )
+        plt.fill_between(
+            generations,
+            mean_fit - std_fit,
+            mean_fit + std_fit,
+            alpha=0.2,
+            color="orange",
+            label="±1 std"
+        )
+
+        plt.xlabel("Generación", fontsize=12)
+        plt.ylabel("Fitness (mejor individuo)", fontsize=12)
+        plt.title(f"{setup_name} - Fitness promedio con desviación", fontsize=14)
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.6)
+
+        outdir = os.path.join(RESULTS_DIR, setup_id)
+        os.makedirs(outdir, exist_ok=True)
+        outfile = os.path.join(outdir, "fitness_std.png")
+        plt.tight_layout()
+        plt.savefig(outfile, dpi=150)
+        plt.close()
+        print(f"[OK] Guardado {outfile}")
 
 def main():
-    # Graficos 1: fitness por corrida
+    # 1) Fitness por corrida
     for setup_name, setup_id in SETUPS:
         plot_fitness(setup_name, setup_id)
 
-    # Graficos 2: generaciones promedio
+    # 2) Fitness promedio + std
+    plot_fitness_std_per_setup()
+
+    # 3) Diversidad promedio + std
+    plot_diversity_std_per_setup()
+
+    # 4) Generaciones promedio (barras)
     plot_generations_bar()
 
-    # Graficos 3: tiempo promedio
+    # 5) Tiempo promedio (barras)
     plot_time_bar()
-
 
 if __name__ == "__main__":
     main()
