@@ -14,8 +14,8 @@ SETUPS = [
 RESULTS_DIR = "results"
 
 
-def plot_fitness_diversity(setup_name, setup_id):
-    """Genera gráficos de fitness + diversidad para cada corrida de un setup."""
+def plot_fitness(setup_name, setup_id):
+    """Genera gráficos de fitness por generación para cada corrida de un setup."""
     history_file = os.path.join(RESULTS_DIR, f"{setup_id}_history.csv")
     if not os.path.exists(history_file):
         print(f"[WARN] No existe {history_file}")
@@ -27,22 +27,29 @@ def plot_fitness_diversity(setup_name, setup_id):
         outdir = os.path.join(RESULTS_DIR, setup_id, f"graph_run_{run_id}")
         os.makedirs(outdir, exist_ok=True)
 
-        plt.figure()
         generations = run_data["generation"].values
         fitness = run_data["fitness"].values
-        diversity = run_data["diversity"].values
 
-        plt.plot(generations, fitness, label="Fitness (mejor)", color="blue")
-        plt.plot(generations, diversity, label="Diversidad (std fitness)", color="red", linestyle="--")
+        plt.figure(figsize=(8, 5))
+        plt.plot(
+            generations,
+            fitness,
+            label="Fitness (mejor individuo)",
+            color="orange",
+            linewidth=2,
+        )
 
-        plt.xlabel("Generación")
-        plt.ylabel("Valor")
-        plt.title(f"{setup_name} - Run {run_id}")
+        plt.xlabel("Generación", fontsize=12)
+        plt.ylabel("Fitness del mejor individuo", fontsize=12)
+        plt.title(f"{setup_name} - Run {run_id}", fontsize=14)
+        plt.grid(True, linestyle="--", alpha=0.6)
         plt.legend()
+
         plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
-        outfile = os.path.join(outdir, "fitness_diversity.png")
-        plt.savefig(outfile)
+        outfile = os.path.join(outdir, "fitness.png")
+        plt.tight_layout()
+        plt.savefig(outfile, dpi=150)
         plt.close()
         print(f"[OK] Guardado {outfile}")
 
@@ -65,17 +72,18 @@ def plot_generations_bar():
     labels, means, stds = zip(*data)
     x = np.arange(len(labels))
 
-    plt.figure()
+    plt.figure(figsize=(8, 5))
     plt.bar(x, means, yerr=stds, capsize=5, color="skyblue")
     plt.xticks(x, labels, rotation=20, ha="right")
     plt.ylabel("Generaciones promedio")
     plt.title("Generaciones promedio por setup (±1 std)")
+    plt.grid(True, axis="y", linestyle="--", alpha=0.6)
 
     outdir = os.path.join(RESULTS_DIR, "summary")
     os.makedirs(outdir, exist_ok=True)
     outfile = os.path.join(outdir, "generations.png")
     plt.tight_layout()
-    plt.savefig(outfile)
+    plt.savefig(outfile, dpi=150)
     plt.close()
     print(f"[OK] Guardado {outfile}")
 
@@ -98,25 +106,26 @@ def plot_time_bar():
     labels, means, stds = zip(*data)
     x = np.arange(len(labels))
 
-    plt.figure()
+    plt.figure(figsize=(8, 5))
     plt.bar(x, means, yerr=stds, capsize=5, color="lightgreen")
     plt.xticks(x, labels, rotation=20, ha="right")
     plt.ylabel("Tiempo promedio (s)")
     plt.title("Tiempo promedio por setup (±1 std)")
+    plt.grid(True, axis="y", linestyle="--", alpha=0.6)
 
     outdir = os.path.join(RESULTS_DIR, "summary")
     os.makedirs(outdir, exist_ok=True)
     outfile = os.path.join(outdir, "time.png")
     plt.tight_layout()
-    plt.savefig(outfile)
+    plt.savefig(outfile, dpi=150)
     plt.close()
     print(f"[OK] Guardado {outfile}")
 
 
 def main():
-    # Graficos 1: fitness + diversidad
+    # Graficos 1: fitness por corrida
     for setup_name, setup_id in SETUPS:
-        plot_fitness_diversity(setup_name, setup_id)
+        plot_fitness(setup_name, setup_id)
 
     # Graficos 2: generaciones promedio
     plot_generations_bar()
