@@ -20,7 +20,7 @@ def run_experiment(name, params, output_file, runs=5):
             mutation_method=params["mutation"],
             replacement_method=params["replacement"],
             mutate_structure=params["mutate_structure"],
-            target_error=0.03,
+            target_error=params["target_error"],
             generation_amount=params["generation_amount"],
         )
         end = time.time()
@@ -46,7 +46,7 @@ def main():
         "max_polygons": 40,
         "polygon_sides": 3,
         "mutate_structure": False,
-        "target_error": 0.02,
+        "target_error": 0.03,
         "generation_amount": 100000,
     }
 
