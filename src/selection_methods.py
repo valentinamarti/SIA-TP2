@@ -104,7 +104,7 @@ def tournament_deterministic(population, num_parents, k=3, **kwargs):
     parents = []
     for _ in range(num_parents):
         tournament = random.sample(population, k)  # elijo k individuos al azar
-        winner = min(tournament, key=lambda ind: ind.fitness)  # mejor fitness
+        winner = max(tournament, key=lambda ind: ind.fitness)  # mejor fitness
         parents.append(winner)
     return parents
 
