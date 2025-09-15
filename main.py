@@ -71,6 +71,8 @@ def run_ga(image: np.ndarray,
     fitness_evaluator.evaluate_population(population)
     population = sorted(population, key=lambda ind: ind.fitness, reverse=True)
     gen = 0
+    fitness_history = [population[0].fitness]
+    diversity_history = [np.std([ind.fitness for ind in population])]
     while gen < generation_amount and (
         target_error is None or population[0].error is None or population[0].error > target_error
     ):
@@ -108,13 +110,20 @@ def run_ga(image: np.ndarray,
         # Reordenamos y avanzamos gen para condición del while
         fitness_evaluator.evaluate_population(population)
         gen += 1
+        fitness_history.append(population[0].fitness)
+        diversity_history.append(np.std([ind.fitness for ind in population]))
 
         # print(f"Generación {gen + 1}: {len(population)} individuos")
 
     best = population[0]
     save_rendered(best, size,filename = "results/output_rgb.png",)
     #print(f"Fitness: {best.fitness}\nPolígonos: {len(best.polygons)}\nGen: {gen}")
-    return {"best": best, "generations": gen}
+    return {
+        "best": best,
+        "generations": gen,
+        "fitness_history": fitness_history,
+        "diversity_history": diversity_history
+    }
 
 
 if __name__ == "__main__":
