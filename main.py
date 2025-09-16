@@ -115,6 +115,12 @@ def run_ga(image: np.ndarray,
         fitness_history.append(population[0].fitness)
         diversity_history.append(np.std([ind.fitness for ind in population]))
 
+        # Guardar imagen del mejor individuo cada 5000 generaciones
+        if gen % 5000 == 0:
+            progress_filename = f"results/progress2/gen_{gen:06d}_fitness_{population[0].fitness:.6f}.png"
+            save_rendered(population[0], size, filename=progress_filename)
+            print(f"Progreso guardado: Generación {gen}, Fitness: {population[0].fitness:.6f}")
+
         # print(f"Generación {gen + 1}: {len(population)} individuos")
 
     best = population[0]

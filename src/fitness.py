@@ -37,8 +37,8 @@ class FitnessEvaluator:
         target_rgb: np.ndarray,
         size_wh: tuple[int, int] | None = None,
         *,
-        w_color: float = 0.7,
-        w_edge: float = 0.3,
+        w_color: float = 1.0,
+        w_edge: float = 0.0,
     ) -> None:
         if size_wh is None:
             size_wh = (target_rgb.shape[1], target_rgb.shape[0])
