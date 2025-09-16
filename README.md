@@ -89,9 +89,9 @@ python main.py [opciones]
 
 ---
 
-### Cruce (crossover)
+### Cruza (crossover)
 - **`--crossover`** *(str, default: `uniform_crossover`)*  
-  Estrategia de cruce:  
+  Estrategia de cruza:  
   - `one_point`: un punto de corte.  
   - `two_point`: dos puntos de corte.  
   - `uniform_crossover`: cada gen tiene probabilidad de venir de uno u otro padre.  
