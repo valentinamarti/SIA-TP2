@@ -86,16 +86,16 @@ class FitnessEvaluator:
         # Color error
         color_err = _mse_norm(self.target_rgb, cand)
 
-        # Edge error (single scale)
-        cand_gray = _to_gray(cand)
-        cand_edges = _edges(cand_gray)
-        edge_err = float(np.mean((self._target_edges - cand_edges) ** 2))
+        # # Edge error (single scale)
+        # cand_gray = _to_gray(cand)
+        # cand_edges = _edges(cand_gray)
+        # edge_err = float(np.mean((self._target_edges - cand_edges) ** 2))
 
         # Combine
         w_sum = max(1e-8, (w_color + w_edge))
         color_w = w_color / w_sum
         edge_w = w_edge / w_sum
-        error = color_w * color_err + edge_w * edge_err
+        error = color_w * color_err # + edge_w * edge_err
 
         fitness = float(np.clip(1.0 - error, 0.0, 1.0))
         individual.fitness = fitness
